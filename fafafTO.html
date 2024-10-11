@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive 3D Object with Three.js</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="three.min.js"></script>
+    <script>
+        let scene, camera, renderer, cylinder;
+        let mouseX = 0, mouseY = 0;
+        const maxRotation = Math.PI / 4; // Maximum rotation angle
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Creating a cylinder geometry
+            const geometry = new THREE.CylinderGeometry(1, 1, 2, 32); // Parameters: top radius, bottom radius, height, radial segments
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+            cylinder = new THREE.Mesh(geometry, material);
+            scene.add(cylinder);
+
+            camera.position.z = 5;
+
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+            animate();
+        }
+
+        function onDocumentMouseMove(event) {
+            // Normalize mouse x and y to range -1 to 1
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update cylinder rotation based on mouse position
+            cylinder.rotation.x = mouseY * maxRotation;
+            cylinder.rotation.y = mouseX * maxRotation;
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        init();
+    </script>
+</body>
+</html>
